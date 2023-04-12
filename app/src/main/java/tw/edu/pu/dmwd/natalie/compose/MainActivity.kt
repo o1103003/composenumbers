@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.Font
@@ -40,51 +42,44 @@ data class Points(
     val y: Float
 
 )
-val ColorRed = Color(0xFFFF0000)
-
-val ColorOrange = Color(0xFFFFA500)
-
-val ColorYellow = Color(0xFFFFFF00)
-
-val ColorGreen = Color(0xFF008000)
-
-val ColorBlue = Color(0xFF0000FF)
-
-val ColorIndigo = Color(0xFF4B0082)
-
-val ColorPurple = Color(0xFF800080)
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+class MainActivity:ComponentActivity(){
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
+        setContent{
             ComposeTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("多指觸控Compose實例")
+                //A surface container using the 'background' color from the theme
+                Surface (modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background){
+                    Greeting("Android")
                 }
             }
         }
     }
 }
+
+
+
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Greeting(name: String) {
-    var PaintColor:Color
 
-    var colors = arrayListOf(
+    var X = remember { mutableStateListOf(0f) }
 
-        ColorRed, ColorOrange, ColorYellow, ColorGreen,
-
-        ColorBlue, ColorIndigo, ColorPurple
-
-    )
-
-    var Touches = remember { mutableStateListOf<Points>() }
+    var Y = remember { mutableStateListOf(0f) }
 
     var Fingers = remember { mutableStateOf (0) }
+    val numberone = ImageBitmap.imageResource(id = R.drawable.n1)
+    val numbertwo = ImageBitmap.imageResource(id = R.drawable.n2)
+    val numberthree = ImageBitmap.imageResource(id = R.drawable.n3)
+    val numberfour = ImageBitmap.imageResource(id = R.drawable.n4)
+    val numberfive = ImageBitmap.imageResource(id = R.drawable.n5)
+
+    var numbers = arrayListOf(
+
+        numberone,numbertwo, numberthree, numberfour,
+
+        numberfive    )
     Box(
 
         modifier = Modifier
@@ -93,14 +88,17 @@ fun Greeting(name: String) {
 
                 Fingers.value = event.getPointerCount()
 
-                Touches.clear()
+                X.clear()
+
+                Y.clear()
 
                 for (i in 0..Fingers.value - 1) {
 
-                    Touches += Points(event.getX(i), event.getY(i))
+                    X.add( event.getX(i))
+
+                    Y.add (event.getY(i))
 
                 }
-
                 true
 
             }
@@ -109,76 +107,24 @@ fun Greeting(name: String) {
 
         Canvas(modifier = Modifier){
 
-            //drawCircle(Color.Yellow, 100f, Offset(200f, 500f))
-            var i = 0
+                //drawCircle(Color.Yellow, 100f, Offset(X.value, Y.value))
+            for (i in 0..Fingers.value - 1) {
 
-            for (p in Touches) {
+                drawImage(numbers[i%5],Offset(X[i]-numberone.width/2, Y[i]-numberone.height/2))
 
-                PaintColor = colors[i % 7]
-
-                drawCircle(PaintColor, 100f, Offset(p.x, p.y))
-
-                i++
+            }
 
             }
 
         }
 
     }
-    Column {
-        Row {
-            Text(
-                text = "$name!",
-                fontFamily = FontFamily(Font(R.font.kai)),
-
-                fontSize = 25.sp,
-
-                color = Color.Blue
-            )
-            Image(
-
-                painter = painterResource(id = R.drawable.hand),
-
-                contentDescription = "手掌圖片",
-
-                alpha = 0.7f,
-
-                modifier = Modifier
-
-                    .clip(CircleShape)
-
-                    .background(Color.Blue)
-
-            )
-        }
-        Text(text = "作者：鍾爱丽")
-        Box(
-
-            modifier = Modifier.fillMaxSize(),
-
-            contentAlignment = Alignment.Center
-
-        ) {
-
-            var count = remember { mutableStateOf(0) }
-
-            Text(
-
-                text = count.value.toString(),
-
-                fontSize = 50.sp,
-                modifier=Modifier.clickable { count.value+=1 }
-            )
-
-        }
-    }
-}
 
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ComposeTheme {
-        Greeting("多指觸控Compose實例")
+        Greeting("Android")
     }
 }
